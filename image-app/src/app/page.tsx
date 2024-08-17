@@ -4,6 +4,16 @@ import React from "react";
 import { ChangeEvent } from "react";
 import { ImageList } from "@/components/ImageList";
 
+type ImageUploadResult = {
+  results: [
+    {
+      id: string,
+      name: string,
+      analysis: Array<Analysis>
+    }
+  ]
+}
+
 export default function Home() {
 
   const handleChange = (event: ChangeEvent) => {
@@ -32,12 +42,20 @@ export default function Home() {
     };
 
     fetch("/api/files", { body: formData, method: "post"})
+      .then(response => response.json<ImageUploadResult>())
       .then(response => {
-        if (response.ok) {
-          setUploadedImages(localUploadedImages);
-        } else {
-          // handle an error
+        for(let x = 0; x < response.results.length; x++) {
+          let image = localUploadedImages.find(
+            i => i.filename === response.results[x].name
+          );
+
+          if (image) {
+            image.analysis = response.results[x].analysis;
+          }
         }
+      })
+      .then(response => {
+        setUploadedImages(localUploadedImages);
       })
   }
 

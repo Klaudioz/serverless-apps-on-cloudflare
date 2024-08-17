@@ -15,3 +15,12 @@ bucket_name = "image-app-uploads-preview"
 [[env.production.r2_buckets]]
 binding = "IMAGE_APP_UPLOADS"
 bucket_name = "image-app-uploads"
+
+[ai]
+binding = "AI"
+
+[env.preview.ai]
+binding = "AI"
+
+[env.production.ai]
+binding = "AI"

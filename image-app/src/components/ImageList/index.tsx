@@ -18,9 +18,17 @@ export const ImageList = ({images}: ImageListProps) => {
                 <img src={image.url}
                       width="100%" />
               </div>
-              <div className="col-6">
-                Image analysis will go here
-              </div>
+              {image.analysis && (
+                <div className="col-6">
+                  { image.analysis.map((a) => (<>{a.label}: {a.score}<br /><br /></>)) }
+                </div>
+              )}
+
+              {!image.analysis && (
+                <div className="col-6">
+                  Image analysis is pending
+                </div>
+              )}            
             </div>
             <hr />
           </>
