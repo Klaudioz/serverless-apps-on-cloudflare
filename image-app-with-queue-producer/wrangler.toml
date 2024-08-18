@@ -1,0 +1,47 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "image-app"
+compatibility_date = "2024-08-15"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+[[r2_buckets]]
+binding = "IMAGE_APP_UPLOADS"
+bucket_name = "image-app-uploads-preview"
+
+[[env.preview.r2_buckets]]
+binding = "IMAGE_APP_UPLOADS"
+bucket_name = "image-app-uploads-preview"
+
+[[env.production.r2_buckets]]
+binding = "IMAGE_APP_UPLOADS"
+bucket_name = "image-app-uploads"
+
+# Local
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "image-analysis"
+database_id = "ec99f664-bfde-4126-95e8-105b8dd196c4"
+
+[[queues.producers]]
+queue = "image-analysis-preview"
+binding = "ANALYSIS_QUEUE"
+
+# Preview
+[[env.preview.d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "image-analysis-preview"
+database_id = "ec99f664-bfde-4126-95e8-105b8dd196c4"
+
+[[env.preview.queues.producers]]
+queue = "image-analysis-preview"
+binding = "ANALYSIS_QUEUE"
+
+# Production
+[[env.production.d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "image-analysis"
+database_id = "5d6b2d05-b857-41f1-903c-39dc3de88dd2"
+
+[[env.production.queues.producers]]
+queue = "image-analysis"
+binding = "ANALYSIS_QUEUE"
