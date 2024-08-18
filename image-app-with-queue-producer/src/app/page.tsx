@@ -1,65 +1,56 @@
 'use client';
 
-import React from "react";
+import React, { useRef } from "react";
 import { ChangeEvent } from "react";
 import { ImageList } from "@/components/ImageList";
-
-type ImageUploadResult = {
-  results: [
-    {
-      id: string,
-      name: string,
-      analysis: Array<Analysis>
-    }
-  ]
-}
+import useFileUpload from "@/hooks/use_handle_image_upload";
+import usePollForAnalysis from "@/hooks/use_poll_for_analysis";
 
 export default function Home() {
+  // START:use_ref
+  const intervalRef = useRef(0);
+  // END:use_ref
+  
+  const handleChange = async (event: ChangeEvent) => {
+    const files = (event.target as HTMLInputElement).files;
 
-  const handleChange = (event: ChangeEvent) => {
-    const local_files = (event.target as HTMLInputElement).files;
-    let localUploadedImages: Array<UserImage> = [];
-    
-    if (local_files == undefined || local_files.length === 0) {
+    if (!files) {
       return;
     }
-
-    let formData = new FormData();
     
-    for (let x = 0; x < local_files.length; x++) {
-      formData.append('files', local_files[x]);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const uploadedImages = await useFileUpload(files);
 
-      localUploadedImages.push(
-        {
-          url: URL.createObjectURL(local_files[x]),
-          filename: local_files[x].name
-        }
-      )
+    // START:set_interval
+    if (uploadedImages) {
+      setUploadedImages(uploadedImages);
+
+      intervalRef.current = window.setInterval(
+        pollForAnalysis,
+        2000,
+        uploadedImages
+      );
     }
-
-    const headers = {
-      'content-type': "multipart/form-data"
-    };
-
-    fetch("/api/files", { body: formData, method: "post"})
-      .then(response => response.json<ImageUploadResult>())
-      .then(response => {
-        for(let x = 0; x < response.results.length; x++) {
-          let image = localUploadedImages.find(
-            i => i.filename === response.results[x].name
-          );
-
-          if (image) {
-            image.analysis = response.results[x].analysis;
-          }
-        }
-      })
-      .then(response => {
-        setUploadedImages(localUploadedImages);
-      })
+    // END:set_interval
   }
 
-  const [uploadedImages, setUploadedImages] = React.useState(new Array());
+  // START:poll_func
+  const pollForAnalysis = async(uploadedImages: Array<UserImage>) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const imagesWithAnalysis = await usePollForAnalysis(uploadedImages);
+
+    if (imagesWithAnalysis.every(i => i.analysis)) {
+      window.clearInterval(intervalRef.current);
+    }
+
+    setUploadedImages([...imagesWithAnalysis]);
+      
+  }
+  // END:poll_func
+
+  const [uploadedImages, setUploadedImages] = React.useState(
+    new Array<UserImage>()
+  );
 
   return (
     <section className="vh-100">

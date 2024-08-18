@@ -5,9 +5,10 @@ interface CloudflareEnv {
 }
 
 interface UserImage {
-  filename: string;
-  url: string;
-  analysis?: Array<Analysis>;
+    filename: string;
+    url: string;
+    analysis?: Array<Analysis>;
+    id?: string;
 }
 
 interface Analysis {
