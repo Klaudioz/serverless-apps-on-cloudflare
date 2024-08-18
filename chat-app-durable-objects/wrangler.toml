@@ -1,0 +1,12 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "chat-app-durable-objects"
+main = "src/index.ts"
+compatibility_date = "2024-08-15"
+
+[[durable_objects.bindings]]
+name = "CHATS"
+class_name = "Chat"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["Chat"]
