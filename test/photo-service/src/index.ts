@@ -19,6 +19,7 @@
 import { Router } from 'itty-router';
 import getImages from './handlers/get_images';
 import createImage from './handlers/create_image';
+import getSingleImage from './handlers/get_single_image';
 /**
  * Initialize a new Router instance
  * This creates a router that will match requests against defined routes
@@ -34,6 +35,9 @@ const router = Router()
  * .post('/images', createImage) - Routes POST requests to /images to the createImage handler
  *                                 Used for creating new image data
  * 
+ * .get('/images/:id', getSingleImage) - Routes GET requests to /images/:id to the getSingleImage handler
+ *                                        Used for retrieving a specific image by its ID
+ * 
  * .get('*', ...) - Wildcard route that catches any GET requests not matched by previous routes
  *                  Returns a 404 response with "Not found" message
  * 
@@ -44,6 +48,7 @@ const router = Router()
  */
 router.get('/images', getImages)
 	.post('/images', createImage)
+	.get('/images/:id', getSingleImage)
 	.get('*', () => new Response('Not found', { status: 404 }));
 
 
